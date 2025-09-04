@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Proxy Iframe</title>
+  <title>Scuffed Uno</title>
   <style>
     html, body {
       margin: 0;
@@ -30,7 +30,6 @@
 <body>
   <div id="iframe-container"></div>
 
-  <!-- Existing proxy scripts -->
   <script src="assets/scripts/t.js?v=6"></script>
   <script src="assets/scripts/m.js?v=42"></script>
   <script src="assets/scripts/i.js?v=18"></script>
@@ -38,7 +37,6 @@
   <script src="./m/bundle.js?v=4"></script>
   <script src="./m/config.js?v=3"></script>
 
-  <!-- Load iframe via proxy using cookies/session -->
   <script>
     (function() {
       const iframeContainer = document.getElementById("iframe-container");
@@ -47,12 +45,11 @@
 
       // Create the iframe
       const iframe = document.createElement("iframe");
-      iframe.id = "proxy-iframe";
+      iframe.id = "iframe";
       iframe.classList.add("active");
-      iframe.setAttribute("onload", "Load()"); // Ensure proxy scripts run
+      iframe.setAttribute("onload", "Load()");
       iframeContainer.appendChild(iframe);
 
-      // Decide which proxy path to use based on localStorage dy value
       const dyValue = localStorage.getItem("dy");
       if (dyValue === "true" || dyValue === "auto") {
         iframe.src = "/a/q/" + __uv$config.encodeUrl(url);
