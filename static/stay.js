@@ -1,31 +1,32 @@
-function fixLinks(doc) {
-    doc.querySelectorAll('a').forEach(link => {
-        link.addEventListener('mouseenter', () => {
-            if (link.target === "_blank") {
-                link.dataset.originalTarget = link.target; // store original
-                link.target = "_self";
+function disableExternalLinks(doc) {
+    doc.addEventListener('click', e => {
+        const link = e.target.closest('a');
+        if (!link) return;
+
+        // Check if link is external
+        try {
+            const url = new URL(link.href, doc.baseURI);
+            if (url.origin !== window.location.origin) {
+                e.preventDefault(); // stop navigation
+                e.stopPropagation();
+                console.log('Blocked external link:', link.href);
             }
-        });
-        link.addEventListener('mouseleave', () => {
-            if (link.dataset.originalTarget) {
-                link.target = link.dataset.originalTarget; // restore
-                delete link.dataset.originalTarget;
-            }
-        });
+        } catch {
+            // ignore invalid URLs
+        }
     });
 }
 
-// Fix links on main document
-fixLinks(document);
+// Apply to main document
+disableExternalLinks(document);
 
-// Fix links inside same-origin iframes
+// Apply to same-origin iframes
 document.querySelectorAll('iframe').forEach(iframe => {
     try {
         if (iframe.contentDocument) {
-            fixLinks(iframe.contentDocument);
+            disableExternalLinks(iframe.contentDocument);
         }
     } catch(e) {
-        // ignore cross-origin iframes
         console.warn('Cannot access iframe:', e);
     }
 });
