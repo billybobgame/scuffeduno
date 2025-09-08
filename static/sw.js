@@ -1,27 +1,31 @@
-importScripts("/dy/config.js?v=4")
-importScripts("/dy/worker.js?v=4")
-importScripts("/m/bundle.js?v=4")
-importScripts("/m/config.js?v=4")
-importScripts(__uv$config.sw || "/m/sw.js?v=4")
+function fixLinks(doc) {
+    doc.querySelectorAll('a').forEach(link => {
+        link.addEventListener('mouseenter', () => {
+            if (link.target === "_blank") {
+                link.dataset.originalTarget = link.target; // store original
+                link.target = "_self";
+            }
+        });
+        link.addEventListener('mouseleave', () => {
+            if (link.dataset.originalTarget) {
+                link.target = link.dataset.originalTarget; // restore
+                delete link.dataset.originalTarget;
+            }
+        });
+    });
+}
 
-const uv = new UVServiceWorker()
-const dynamic = new Dynamic()
+// Fix links on main document
+fixLinks(document);
 
-let userKey = new URL(location).searchParams.get("userkey")
-self.dynamic = dynamic
-
-self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    (async function () {
-      if (await dynamic.route(event)) {
-        return await dynamic.fetch(event)
-      }
-
-      if (event.request.url.startsWith(location.origin + "/a/")) {
-        return await uv.fetch(event)
-      }
-
-      return await fetch(event.request)
-    })()
-  )
-})
+// Fix links inside same-origin iframes
+document.querySelectorAll('iframe').forEach(iframe => {
+    try {
+        if (iframe.contentDocument) {
+            fixLinks(iframe.contentDocument);
+        }
+    } catch(e) {
+        // ignore cross-origin iframes
+        console.warn('Cannot access iframe:', e);
+    }
+});
