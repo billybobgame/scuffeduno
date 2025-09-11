@@ -58,28 +58,5 @@
       }
     })();
   </script>
-const iframe = document.getElementById('myIframe');
-
-  iframe.onload = () => {
-      try {
-          const iframeDocument = iframe.contentDocument || iframe.contentWindow.document;
-          const styleElement = iframeDocument.createElement('style');
-
-          styleElement.textContent = `
-              #gameadsbanner {
-                  display: none !important;
-              }
-          `;
-          
-          // Append the style to the iframe's head.
-          if (iframeDocument.head) {
-              iframeDocument.head.appendChild(styleElement);
-              console.log('CSS injected successfully!');
-          }
-      } catch (e) {
-          console.error('Failed to inject CSS. This is likely due to the same-origin policy.', e);
-      }
-  };
-  <script>
 </body>
 </html>
